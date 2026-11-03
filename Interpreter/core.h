@@ -1,0 +1,39 @@
+#pragma once
+#include <cctype>
+#include <cstddef>
+#include <string>
+#define VERSION "0.1.0"
+
+inline void string_strip(std::string* str) {
+    const char WHITESPACE[] = " \t\n\r\f\v";
+
+    size_t start = str->find_first_not_of(WHITESPACE);
+    if (start != std::string::npos) {
+        str->erase(0, start);
+    } else {
+        str->clear();
+        return;
+    }
+
+    size_t end = str->find_last_not_of(WHITESPACE);
+
+    if (end != std::string::npos) {
+        str->erase(end + 1);
+    }
+}
+
+inline bool is_identifier_start(char c) {
+    return c == '_' || std::isalpha(static_cast<unsigned char>(c));
+}
+
+inline bool is_identifier_continue(char c) {
+    return is_identifier_start(c) || std::isdigit(static_cast<unsigned char>(c));
+}
+
+inline bool is_number_start(char c) {
+    return std::isdigit(static_cast<unsigned char>(c));
+}
+
+inline bool is_number_continue(char c) {
+    return is_number_start(c) || c == '.';
+}
