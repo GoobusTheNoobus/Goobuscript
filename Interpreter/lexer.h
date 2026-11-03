@@ -29,6 +29,8 @@ class Lexer {
     
     char next();
     void next(size_t amount); // should never go back
+
+    char get_escape();
     
 };
 

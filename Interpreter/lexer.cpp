@@ -140,7 +140,19 @@ bool Lexer::try_tokenize_string(std::vector<Token> *tokens) {
     std::string str;
 
     while (!end() && peek() != '\n' && peek() != quote) {
-        // TODO: Implement escape character
+        
+        if (peek() == '\\') {
+            next(); // skip the backslash
+            
+            if (end() || peek() == '\n') {
+                diagnostic::report_error("Unterminated escape sequence");
+                break;
+            }
+
+            str += get_escape();
+            continue;
+        }
+
         str += next();
     }
 
@@ -150,6 +162,23 @@ bool Lexer::try_tokenize_string(std::vector<Token> *tokens) {
 
     tokens->push_back({str, TokenKind::String});
     return true;
+}
+
+char Lexer::get_escape() {
+    switch (next()) {
+        case '\\': return '\\';
+        case '\'': return '\'';
+        case '"': return '"';
+        case 'n': return '\n';
+        case 'r': return '\r';
+        case 't': return '\t';
+        case 'v': return '\v';
+        case 'e': return '\e';
+        default: {
+            diagnostic::report_error("Unknown escape sequence");
+            return ' ';
+        }
+    }
 }
     
 char Lexer::peek() const {
