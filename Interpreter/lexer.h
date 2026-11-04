@@ -8,13 +8,12 @@ namespace parse {
 
 class Lexer {
     public:
-    Lexer(std::string source) : source(std::move(source)) {
-    }
+    Lexer(std::string source) : source(std::move(source)) {}
 
     std::vector<Token> tokenize();
 
     private:
-    std::string source;
+    const std::string source;
     size_t pos = 0;
     
     bool try_tokenize_symbol(std::vector<Token>* tokens);

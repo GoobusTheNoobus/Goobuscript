@@ -191,7 +191,7 @@ char Lexer::peek() const {
 
 char Lexer::peek(ptrdiff_t offset) const {
 
-    auto lookup = static_cast<ptrdiff_t>(source.size()) - offset;
+    auto lookup = static_cast<ptrdiff_t>(pos) + offset;
 
     if (lookup < 0 || lookup >= source.size()) {
         return '\0';

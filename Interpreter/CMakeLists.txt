@@ -11,4 +11,6 @@ add_executable(gs
     driver.cpp
     lexer.cpp 
     token.cpp
+    parser.cpp
+    ast.cpp 
 )

@@ -1,7 +1,9 @@
 #include "driver.h"
+#include "ast.h"
 #include "core.h"
 #include "diagnostic.h"
 #include "lexer.h"
+#include "parser.h"
 #include <iostream>
 #include <string>
 
@@ -34,7 +36,14 @@ int repl() {
             continue;
         }
 
-        std::cout << tokens;
+        parse::Parser parser(tokens);
+        SyntaxTree tree = parser.parse();
+
+        if (diagnostic::has_error) {
+            continue;
+        }
+
+        std::cout << tree;
     }
 
     return 0;
