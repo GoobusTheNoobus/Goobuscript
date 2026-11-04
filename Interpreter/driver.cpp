@@ -2,8 +2,10 @@
 #include "ast.h"
 #include "core.h"
 #include "diagnostic.h"
+#include "evaluator.h"
 #include "lexer.h"
 #include "parser.h"
+#include "value.h"
 #include <iostream>
 #include <string>
 
@@ -29,6 +31,10 @@ int repl() {
             break;
         }
 
+        if (input.empty()) {
+            continue;
+        }
+
         parse::Lexer lexer(input);
         auto tokens = lexer.tokenize();
 
@@ -43,7 +49,12 @@ int repl() {
             continue;
         }
 
-        std::cout << tree;
+        Evaluator evaluator;
+        Value last_value = evaluator.run(tree);
+
+        if (last_value && last_value.type != Type::Void) {
+            std::cout << last_value.to_string() << std::endl;
+        }
     }
 
     return 0;

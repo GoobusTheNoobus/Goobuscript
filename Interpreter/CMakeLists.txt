@@ -13,4 +13,6 @@ add_executable(gs
     token.cpp
     parser.cpp
     ast.cpp 
+    evaluator.cpp 
+    value.cpp
 )
