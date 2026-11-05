@@ -26,7 +26,7 @@ std::vector<Token> Lexer::tokenize() {
             continue;
         }
 
-        if (try_tokenize_identifier(&tokens)) {
+        if (try_tokenize_word(&tokens)) {
             continue;
         }
 
@@ -90,7 +90,7 @@ bool Lexer::try_tokenize_symbol(std::vector<Token> *tokens) {
     }
 }
 
-bool Lexer::try_tokenize_identifier(std::vector<Token> *tokens) {
+bool Lexer::try_tokenize_word(std::vector<Token> *tokens) {
     if (!is_identifier_start(peek())) {
         return false;
     }
@@ -101,7 +101,14 @@ bool Lexer::try_tokenize_identifier(std::vector<Token> *tokens) {
         str += next();
     }
 
-    tokens->push_back({str, TokenKind::Identifier});
+    auto kind = TokenKind::Identifier;
+    if (str == "true") 
+        kind = TokenKind::True;   
+
+    if (str == "false")
+        kind = TokenKind::False;
+
+    tokens->push_back({str, kind});
     return true;
 }
 

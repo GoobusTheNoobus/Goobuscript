@@ -17,7 +17,7 @@ class Lexer {
     size_t pos = 0;
     
     bool try_tokenize_symbol(std::vector<Token>* tokens);
-    bool try_tokenize_identifier(std::vector<Token>* tokens);
+    bool try_tokenize_word(std::vector<Token>* tokens);
     bool try_tokenize_number(std::vector<Token>* tokens);
     bool try_tokenize_string(std::vector<Token>* tokens);
 

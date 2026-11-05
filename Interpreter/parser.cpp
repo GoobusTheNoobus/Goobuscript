@@ -80,6 +80,11 @@ std::unique_ptr<ASTNode> Parser::parse_primary() {
             return std::make_unique<String>(next().str);
         }
 
+        case parse::TokenKind::True: 
+        case parse::TokenKind::False: {
+            return std::make_unique<Boolean>(next().str == "true");
+        }
+
         case parse::TokenKind::LeftParen: {
             next();
 

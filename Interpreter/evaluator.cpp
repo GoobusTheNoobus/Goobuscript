@@ -31,6 +31,7 @@ Value Evaluator::evaluate(std::unique_ptr<ASTNode> &node) {
     switch (node->kind()) {
         case ASTNodeKind::Number: return static_cast<Number&>(*node).value;
         case ASTNodeKind::String: return static_cast<String&>(*node).value;
+        case ASTNodeKind::Boolean: return static_cast<Boolean&>(*node).value;
         case ASTNodeKind::Identifier: diagnostic::report_error("Identifiers are not supported"); return Error;
         case ASTNodeKind::BinaryOperation: return evaluate_binary(static_cast<BinaryOperation&>(*node));
         case ASTNodeKind::UnaryOperation: return evaluate_unary(static_cast<UnaryOperation&>(*node));

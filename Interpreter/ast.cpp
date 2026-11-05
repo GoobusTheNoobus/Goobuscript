@@ -14,6 +14,10 @@ std::string Number::to_string(int indent) const {
     return std::string(indent, ' ') + "Number(" + std::to_string(value) + ")\n";
 }
 
+std::string Boolean::to_string(int indent) const {
+    return std::string(indent, ' ') + "Boolean(" + (value ? "true" : "false") + ")\n";
+}
+
 std::string BinaryOperation::to_string(int indent) const {
     return 
         std::string(indent, ' ') + "BinaryOperation(" + parse::token_kind_to_string(operator_) + ")\n" +

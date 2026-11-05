@@ -8,6 +8,7 @@ std::string type_to_string(Type type) {
     switch (type) {
         case Type::Number: return "number";
         case Type::String: return "string";
+        case Type::Boolean: return "boolean";
         case Type::Void: return "void";
         default: return "<error>";
     }
@@ -21,6 +22,10 @@ std::string Value::to_string() const {
 
         case Type::String: {
             return *get_str();
+        }
+
+        case Type::Boolean: {
+            return *get_bool() ? "true" : "false";
         }
 
         default: {
@@ -56,4 +61,18 @@ std::optional<std::string> Value::get_str() const {
     }
 
     return *pstr;
+}
+
+std::optional<bool> Value::get_bool() const {
+    if (type != Type::Boolean) 
+        return std::nullopt;
+
+    const bool* pbool = std::get_if<bool>(&data);
+
+    if (!pbool) {
+        throw std::runtime_error(
+            "Value type does not match variant value. The type is boolean, but the variant isnt");
+    }
+
+    return *pbool;
 }

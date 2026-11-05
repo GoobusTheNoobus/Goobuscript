@@ -18,6 +18,13 @@ std::string token_kind_to_string(TokenKind kind) {
         "LeftParen", 
         "RightParen",
 
+        "AndAnd",
+        "OrOr",
+        "Bang",
+
+        "True",
+        "False",
+
         "Semicolon", 
         "Comma",
         "EndOfFile",

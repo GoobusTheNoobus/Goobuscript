@@ -9,6 +9,7 @@ enum class ASTNodeKind {
     Identifier,
     Number,
     String,
+    Boolean,
 
     BinaryOperation,
     UnaryOperation,
@@ -47,6 +48,14 @@ struct Number: ASTNode {
 
     Number(double value) : value(value) {}
     ASTNodeKind kind() const override { return ASTNodeKind::Number; }
+    std::string to_string(int indent) const override;
+};
+
+struct Boolean: ASTNode {
+    bool value;
+
+    Boolean(bool value) : value(value) {}
+    ASTNodeKind kind() const override { return ASTNodeKind::Boolean; }
     std::string to_string(int indent) const override;
 };
 
