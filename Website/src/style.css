@@ -21,8 +21,15 @@ html, body {
   min-height: 100vh;
   color: var(--color-text);
   font-family: var(--font-ui);
+
+  overflow: auto;
 }
 
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 .mono {
   font-family: var(--font-mono);
 }
