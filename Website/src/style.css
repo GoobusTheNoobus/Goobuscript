@@ -9,7 +9,6 @@
   --color-primary-dark: #894482;
   --color-muted: #bcc0c1;
 
-  --font-ui: 'Arial', Tahoma, Geneva, Verdana, sans-serif;
   --font-mono: 'JetBrains Mono', 'Courier New', Courier, monospace;
 }
 
@@ -20,7 +19,8 @@ html, body {
   background-color: #8f989827;
   min-height: 100vh;
   color: var(--color-text);
-  font-family: var(--font-ui);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
 
   overflow: auto;
 }
@@ -29,7 +29,4 @@ html, body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-.mono {
-  font-family: var(--font-mono);
 }
