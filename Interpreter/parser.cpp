@@ -24,7 +24,33 @@ SyntaxTree Parser::parse() {
 }
 
 std::unique_ptr<ASTNode> Parser::parse_expression() {
-    return parse_additive();
+    return parse_logical_or();
+}
+
+std::unique_ptr<ASTNode> Parser::parse_logical_or() {
+    auto lhs = parse_logical_and();
+
+    while (!end() && peek().kind == TokenKind::OrOr) {
+        TokenKind operator_ = next().kind;
+
+        auto rhs = parse_logical_and();
+        lhs = std::make_unique<BinaryOperation>(std::move(lhs), std::move(rhs), operator_);
+    }
+
+    return lhs;
+}
+
+std::unique_ptr<ASTNode> Parser::parse_logical_and() {
+    auto lhs = parse_additive();
+
+    while (!end() && peek().kind == TokenKind::AndAnd) {
+        TokenKind operator_ = next().kind;
+
+        auto rhs = parse_additive();
+        lhs = std::make_unique<BinaryOperation>(std::move(lhs), std::move(rhs), operator_);
+    }
+
+    return lhs;
 }
 
 std::unique_ptr<ASTNode> Parser::parse_additive() {

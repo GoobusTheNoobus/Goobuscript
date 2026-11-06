@@ -45,6 +45,10 @@ Value Evaluator::evaluate_unary(UnaryOperation &node) {
 
     Value value = evaluate(node.operand);
 
+    if (node.operator_ == parse::TokenKind::Bang) {
+        return !value.is_truthy();
+    }
+
     switch (value.type) {
         case Type::Number: {
             return node.operator_ == parse::TokenKind::Plus ? 
@@ -62,7 +66,51 @@ Value Evaluator::evaluate_unary(UnaryOperation &node) {
 
 Value Evaluator::evaluate_binary(BinaryOperation &node) {
 
+    bool is_logical = node.operator_ == parse::TokenKind::AndAnd || 
+                      node.operator_ == parse::TokenKind::OrOr;
+
     Value value1 = evaluate(node.operand1);
+
+    // Javascript has some unusual logical operator handling. Instead of 
+    // comparing booleans, truthiness is the factor that gets decided.
+
+    if (is_logical) {
+        switch (node.operator_) {
+
+            // && operator: returns the first untruthy value, or the last one
+            // if both are truthy
+            case parse::TokenKind::AndAnd: {
+                bool truthiness1 = value1.is_truthy();
+                
+                if (!truthiness1) return value1; 
+
+                Value value2 = evaluate(node.operand2);
+
+                // it doesn't matter if its truthy, if its false, it is the first one 
+                // to be false, so that gets returned. If its true, it still gets returned,
+                // since its the last one
+                return value2;
+            }
+
+            // || operator: returns the first truthy operand, or the last one
+            // if both is false
+            case parse::TokenKind::OrOr: {
+                bool truthiness1 = value1.is_truthy();
+
+                if (truthiness1) return value1;
+
+                Value value2 = evaluate(node.operand2);
+
+                // like the last one, it doesn't really matter if this one is truthy or falsy,
+                // as both return the last one
+                return value2;
+            }
+
+            default: throw std::runtime_error("Unknown operator " + 
+                parse::token_kind_to_string(node.operator_));
+        }
+    }
+
     Value value2 = evaluate(node.operand2);
 
     // Propagate error
@@ -72,6 +120,7 @@ Value Evaluator::evaluate_binary(BinaryOperation &node) {
 
     bool is_both_str = value1.type == Type::String && value2.type == Type::String;
     bool is_both_num = value1.type == Type::Number && value2.type == Type::Number;
+    
 
     if (is_both_str && node.operator_ == parse::TokenKind::Plus) {
 
@@ -93,7 +142,8 @@ Value Evaluator::evaluate_binary(BinaryOperation &node) {
             case parse::TokenKind::Minus: return num1 - num2;
             case parse::TokenKind::Star: return num1 * num2;
             case parse::TokenKind::Slash: return num1 / num2;
-            default: throw std::runtime_error("Unknown operator");
+            default: throw std::runtime_error("Unknown operator " + 
+                parse::token_kind_to_string(node.operator_));
         }
     }
 

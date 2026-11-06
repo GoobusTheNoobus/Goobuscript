@@ -1,4 +1,5 @@
 #include "value.h"
+#include <cmath>
 #include <optional>
 #include <stdexcept>
 #include <string>
@@ -32,6 +33,32 @@ std::string Value::to_string() const {
             throw std::runtime_error("Unprintable type id=" + std::to_string(static_cast<int>(type)));
         }
             
+    }
+}
+
+bool Value::is_truthy() const {
+    switch (type) {
+        case Type::Number: {
+            double num = *get_num();
+
+            return num != 0.0 && !std::isnan(num);
+        }
+
+        case Type::String: {
+            return !get_str()->empty();
+        }
+
+        case Type::Boolean: {
+            return *get_bool();
+        }
+
+        case Type::Void: {
+            return false; // void is always false
+        }
+
+        default: {
+            throw std::runtime_error("Unknown truthiness type id=" + std::to_string(static_cast<int>(type)));
+        }
     }
 }
 

@@ -85,6 +85,26 @@ bool Lexer::try_tokenize_symbol(std::vector<Token> *tokens) {
             tokens->push_back({"/", TokenKind::Slash});
             next();
             return true;
+        case '&':
+            if (peek(1) == '&') {
+                tokens->push_back({"&&", TokenKind::AndAnd});
+                next(2);
+                return true;
+            }
+
+            return false;
+        case '|':
+            if (peek(1) == '|') {
+                tokens->push_back({"||", TokenKind::OrOr});
+                next(2);
+                return true;
+            }
+
+            return false;
+        case '!': 
+            tokens->push_back({"!", TokenKind::Bang});
+            next();
+            return true;
         default:
             return false;
     }

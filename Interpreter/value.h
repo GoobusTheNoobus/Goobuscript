@@ -33,6 +33,8 @@ struct Value {
     std::optional<double> get_num() const;
     std::optional<std::string> get_str() const;
     std::optional<bool> get_bool() const;
+
+    bool is_truthy() const;
 };
 
 inline const Value Error = std::monostate{};
