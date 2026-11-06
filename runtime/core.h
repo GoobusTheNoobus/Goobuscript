@@ -4,7 +4,7 @@
 #include <string>
 #define VERSION "0.1.0"
 
-inline void string_strip(std::string* str) {
+inline void string_strip(std::string *str) {
     const char WHITESPACE[] = " \t\n\r\f\v";
 
     size_t start = str->find_first_not_of(WHITESPACE);
@@ -27,7 +27,8 @@ inline bool is_identifier_start(char c) {
 }
 
 inline bool is_identifier_continue(char c) {
-    return is_identifier_start(c) || std::isdigit(static_cast<unsigned char>(c));
+    return is_identifier_start(c) ||
+           std::isdigit(static_cast<unsigned char>(c));
 }
 
 inline bool is_number_start(char c) {

@@ -12,7 +12,7 @@
 namespace driver {
 
 int repl() {
-    
+
     std::cout << "Goobuscript interactive console\n";
     std::cout << "Type :quit to exit this shell.\n\n";
 
@@ -20,7 +20,7 @@ int repl() {
         diagnostic::has_error = false; // reset diagnostic state
         std::cout << "> ";
         std::string input;
-        
+
         if (!std::getline(std::cin, input)) {
             return 1;
         }
@@ -60,4 +60,4 @@ int repl() {
     return 0;
 }
 
-}
+} // namespace driver

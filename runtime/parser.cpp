@@ -2,9 +2,9 @@
 #include "ast.h"
 #include "diagnostic.h"
 #include "token.h"
+#include <format>
 #include <memory>
 #include <string>
-#include <format>
 
 namespace parse {
 
@@ -34,20 +34,54 @@ std::unique_ptr<ASTNode> Parser::parse_logical_or() {
         TokenKind operator_ = next().kind;
 
         auto rhs = parse_logical_and();
-        lhs = std::make_unique<BinaryOperation>(std::move(lhs), std::move(rhs), operator_);
+        lhs = std::make_unique<BinaryOperation>(std::move(lhs), std::move(rhs),
+                                                operator_);
     }
 
     return lhs;
 }
 
 std::unique_ptr<ASTNode> Parser::parse_logical_and() {
-    auto lhs = parse_additive();
+    auto lhs = parse_equality();
 
     while (!end() && peek().kind == TokenKind::AndAnd) {
         TokenKind operator_ = next().kind;
 
+        auto rhs = parse_equality();
+        lhs = std::make_unique<BinaryOperation>(std::move(lhs), std::move(rhs),
+                                                operator_);
+    }
+
+    return lhs;
+}
+
+std::unique_ptr<ASTNode> Parser::parse_equality() {
+    auto lhs = parse_relational();
+
+    while (!end() && (peek().kind == TokenKind::EqualEqual ||
+                      peek().kind == TokenKind::BangEqual)) {
+        TokenKind operator_ = next().kind;
+
+        auto rhs = parse_relational();
+        lhs = std::make_unique<BinaryOperation>(std::move(lhs), std::move(rhs),
+                                                operator_);
+    }
+
+    return lhs;
+}
+
+std::unique_ptr<ASTNode> Parser::parse_relational() {
+    auto lhs = parse_additive();
+
+    while (!end() && (peek().kind == TokenKind::LessThan ||
+                      peek().kind == TokenKind::LessEqualThan ||
+                      peek().kind == TokenKind::MoreThan ||
+                      peek().kind == TokenKind::MoreEqualThan)) {
+        TokenKind operator_ = next().kind;
+
         auto rhs = parse_additive();
-        lhs = std::make_unique<BinaryOperation>(std::move(lhs), std::move(rhs), operator_);
+        lhs = std::make_unique<BinaryOperation>(std::move(lhs), std::move(rhs),
+                                                operator_);
     }
 
     return lhs;
@@ -56,11 +90,13 @@ std::unique_ptr<ASTNode> Parser::parse_logical_and() {
 std::unique_ptr<ASTNode> Parser::parse_additive() {
     auto lhs = parse_multiplicative();
 
-    while (!end() && (peek().kind == TokenKind::Plus || peek().kind == TokenKind::Minus)) {
+    while (!end() && (peek().kind == TokenKind::Plus ||
+                      peek().kind == TokenKind::Minus)) {
         TokenKind operator_ = next().kind;
 
         auto rhs = parse_multiplicative();
-        lhs = std::make_unique<BinaryOperation>(std::move(lhs), std::move(rhs), operator_);
+        lhs = std::make_unique<BinaryOperation>(std::move(lhs), std::move(rhs),
+                                                operator_);
     }
 
     return lhs;
@@ -69,11 +105,13 @@ std::unique_ptr<ASTNode> Parser::parse_additive() {
 std::unique_ptr<ASTNode> Parser::parse_multiplicative() {
     auto lhs = parse_unary();
 
-    while (!end() && (peek().kind == TokenKind::Star || peek().kind == TokenKind::Slash)) {
+    while (!end() && (peek().kind == TokenKind::Star ||
+                      peek().kind == TokenKind::Slash)) {
         TokenKind operator_ = next().kind;
 
         auto rhs = parse_unary();
-        lhs = std::make_unique<BinaryOperation>(std::move(lhs), std::move(rhs), operator_);
+        lhs = std::make_unique<BinaryOperation>(std::move(lhs), std::move(rhs),
+                                                operator_);
     }
 
     return lhs;
@@ -81,7 +119,8 @@ std::unique_ptr<ASTNode> Parser::parse_multiplicative() {
 
 std::unique_ptr<ASTNode> Parser::parse_unary() {
 
-    if (!end() && (peek().kind == TokenKind::Plus || peek().kind == TokenKind::Minus)) {
+    if (!end() &&
+        (peek().kind == TokenKind::Plus || peek().kind == TokenKind::Minus)) {
         TokenKind operator_ = next().kind;
 
         auto operand = parse_unary();
@@ -106,7 +145,7 @@ std::unique_ptr<ASTNode> Parser::parse_primary() {
             return std::make_unique<String>(next().str);
         }
 
-        case parse::TokenKind::True: 
+        case parse::TokenKind::True:
         case parse::TokenKind::False: {
             return std::make_unique<Boolean>(next().str == "true");
         }
@@ -117,22 +156,23 @@ std::unique_ptr<ASTNode> Parser::parse_primary() {
             auto expression = parse_expression();
 
             if (peek().kind != TokenKind::RightParen) {
-                diagnostic::report_error(std::format("Expected ')', got {}", peek().repr()));
-            }
-            else next();
+                diagnostic::report_error(
+                    std::format("Expected ')', got {}", peek().repr()));
+            } else
+                next();
 
             return expression;
         }
 
         default: {
-            diagnostic::report_error(std::format("Expected expression, got {}", next().repr()));
+            diagnostic::report_error(
+                std::format("Expected expression, got {}", next().repr()));
             return std::make_unique<Invalid>();
         }
     }
 }
 
-
-const Token& Parser::peek() const {
+const Token &Parser::peek() const {
     if (pos < tokens.size()) {
         return tokens[pos];
     }
@@ -140,7 +180,7 @@ const Token& Parser::peek() const {
     return tokens.back();
 }
 
-const Token& Parser::peek(ptrdiff_t offset) const {
+const Token &Parser::peek(ptrdiff_t offset) const {
 
     auto lookup = static_cast<ptrdiff_t>(pos) + offset;
 
@@ -155,8 +195,7 @@ bool Parser::end() const {
     return pos >= tokens.size();
 }
 
-const Token& Parser::next()
-{
+const Token &Parser::next() {
     if (end())
         return tokens.back();
 
@@ -167,4 +206,4 @@ void Parser::next(size_t amount) {
     pos += amount;
 }
 
-}
+} // namespace parse

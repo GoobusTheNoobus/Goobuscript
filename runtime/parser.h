@@ -8,7 +8,8 @@ namespace parse {
 
 class Parser {
     public:
-    Parser(std::vector<Token> tokens) : tokens(std::move(tokens)) {}
+    Parser(std::vector<Token> tokens) : tokens(std::move(tokens)) {
+    }
     SyntaxTree parse();
 
     private:
@@ -20,18 +21,21 @@ class Parser {
     std::unique_ptr<ASTNode> parse_logical_or();
     std::unique_ptr<ASTNode> parse_logical_and();
 
+    std::unique_ptr<ASTNode> parse_equality();
+    std::unique_ptr<ASTNode> parse_relational();
+
     std::unique_ptr<ASTNode> parse_additive();
     std::unique_ptr<ASTNode> parse_multiplicative();
     std::unique_ptr<ASTNode> parse_unary();
     std::unique_ptr<ASTNode> parse_primary();
 
-    const Token& peek() const;
-    const Token& peek(ptrdiff_t offset) const;
+    const Token &peek() const;
+    const Token &peek(ptrdiff_t offset) const;
 
     bool end() const;
-    
-    const Token& next();
+
+    const Token &next();
     void next(size_t amount); // should never go back
 };
 
-}
+} // namespace parse

@@ -1,0 +1,6 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+AllowShortFunctionsOnASingleLine: None
+AccessModifierOffset: 0
+IndentCaseLabels: true
+ColumnLimit: 120

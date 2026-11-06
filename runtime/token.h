@@ -23,6 +23,14 @@ enum class TokenKind {
     OrOr,
     Bang,
 
+    LessThan,
+    LessEqualThan,
+    MoreThan,
+    MoreEqualThan,
+
+    EqualEqual,
+    BangEqual,
+
     True,
     False,
 
@@ -32,6 +40,8 @@ enum class TokenKind {
 };
 
 std::string token_kind_to_string(TokenKind kind);
+bool is_logical_op(TokenKind op);
+bool is_comparison_op(TokenKind op);
 
 struct Token {
     std::string str;
@@ -51,8 +61,7 @@ inline std::ostream &operator<<(std::ostream &out, const Token &token) {
     return out;
 }
 
-inline std::ostream &operator<<(std::ostream &out,
-                                const std::vector<Token> &tokens) {
+inline std::ostream &operator<<(std::ostream &out, const std::vector<Token> &tokens) {
     for (const auto &token : tokens) {
         out << token << '\n';
     }

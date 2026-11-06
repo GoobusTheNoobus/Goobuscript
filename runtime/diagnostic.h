@@ -6,9 +6,9 @@ namespace diagnostic {
 
 inline bool has_error = false;
 
-inline void report_error(const std::string& str) {
+inline void report_error(const std::string &str) {
     std::cout << "\033[31m\033[1mError\033[0m: " << str << "\n";
     has_error = true;
 }
 
-}
+} // namespace diagnostic

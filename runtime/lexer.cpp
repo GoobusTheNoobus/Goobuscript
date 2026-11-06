@@ -38,8 +38,8 @@ std::vector<Token> Lexer::tokenize() {
             continue;
         }
 
-        diagnostic::report_error("Unexpected character '" + std::string(1, next()) + "'");
-        
+        diagnostic::report_error("Unexpected character '" +
+                                 std::string(1, next()) + "'");
     }
 
     tokens.push_back({"", TokenKind::EndOfFile});
@@ -49,7 +49,7 @@ std::vector<Token> Lexer::tokenize() {
 bool Lexer::try_tokenize_symbol(std::vector<Token> *tokens) {
 
     switch (peek()) {
-        case '(': 
+        case '(':
             tokens->push_back({"(", TokenKind::LeftParen});
             next();
             return true;
@@ -63,10 +63,6 @@ bool Lexer::try_tokenize_symbol(std::vector<Token> *tokens) {
             return true;
         case ',':
             tokens->push_back({",", TokenKind::Comma});
-            next();
-            return true;
-        case '=':
-            tokens->push_back({"=", TokenKind::Equal});
             next();
             return true;
         case '+':
@@ -101,7 +97,43 @@ bool Lexer::try_tokenize_symbol(std::vector<Token> *tokens) {
             }
 
             return false;
-        case '!': 
+        case '<':
+            if (peek(1) == '=') {
+                tokens->push_back({"<=", TokenKind::LessEqualThan});
+                next(2);
+                return true;
+            }
+
+            tokens->push_back({"<", TokenKind::LessThan});
+            next();
+            return true;
+        case '>':
+            if (peek(1) == '=') {
+                tokens->push_back({">=", TokenKind::MoreEqualThan});
+                next(2);
+                return true;
+            }
+
+            tokens->push_back({">", TokenKind::MoreThan});
+            next();
+            return true;
+        case '=':
+            if (peek(1) == '=') {
+                tokens->push_back({"==", TokenKind::EqualEqual});
+                next(2);
+                return true;
+            }
+
+            tokens->push_back({"=", TokenKind::Equal});
+            next();
+            return true;
+        case '!':
+            if (peek(1) == '=') {
+                tokens->push_back({"!=", TokenKind::BangEqual});
+                next(2);
+                return true;
+            }
+
             tokens->push_back({"!", TokenKind::Bang});
             next();
             return true;
@@ -122,8 +154,8 @@ bool Lexer::try_tokenize_word(std::vector<Token> *tokens) {
     }
 
     auto kind = TokenKind::Identifier;
-    if (str == "true") 
-        kind = TokenKind::True;   
+    if (str == "true")
+        kind = TokenKind::True;
 
     if (str == "false")
         kind = TokenKind::False;
@@ -151,7 +183,6 @@ bool Lexer::try_tokenize_number(std::vector<Token> *tokens) {
         }
 
         str += next();
-
     }
 
     tokens->push_back({str, TokenKind::Number});
@@ -167,10 +198,10 @@ bool Lexer::try_tokenize_string(std::vector<Token> *tokens) {
     std::string str;
 
     while (!end() && peek() != '\n' && peek() != quote) {
-        
+
         if (peek() == '\\') {
             next(); // skip the backslash
-            
+
             if (end() || peek() == '\n') {
                 diagnostic::report_error("Unterminated escape sequence");
                 break;
@@ -185,7 +216,8 @@ bool Lexer::try_tokenize_string(std::vector<Token> *tokens) {
 
     if (peek() != quote) {
         diagnostic::report_error("Unterminated string literal");
-    } else next();
+    } else
+        next();
 
     tokens->push_back({str, TokenKind::String});
     return true;
@@ -193,21 +225,29 @@ bool Lexer::try_tokenize_string(std::vector<Token> *tokens) {
 
 char Lexer::get_escape() {
     switch (next()) {
-        case '\\': return '\\';
-        case '\'': return '\'';
-        case '"': return '"';
-        case 'n': return '\n';
-        case 'r': return '\r';
-        case 't': return '\t';
-        case 'v': return '\v';
-        case 'e': return '\e';
+        case '\\':
+            return '\\';
+        case '\'':
+            return '\'';
+        case '"':
+            return '"';
+        case 'n':
+            return '\n';
+        case 'r':
+            return '\r';
+        case 't':
+            return '\t';
+        case 'v':
+            return '\v';
+        case 'e':
+            return '\e';
         default: {
             diagnostic::report_error("Unknown escape sequence");
             return ' ';
         }
     }
 }
-    
+
 char Lexer::peek() const {
     if (pos < source.size()) {
         return source[pos];
@@ -241,4 +281,4 @@ void Lexer::next(size_t amount) {
     pos += amount;
 }
 
-}
+} // namespace parse
