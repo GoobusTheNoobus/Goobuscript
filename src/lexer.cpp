@@ -9,148 +9,148 @@
 
 namespace parse {
 
-std::vector<Token> Lexer::tokenize() {
+std::vector<Token> Lexer::Tokenize() {
 
     std::vector<Token> tokens;
 
-    while (!end()) {
+    while (!End()) {
 
-        char cur = peek();
+        char cur = Peek();
 
         if (std::isspace(cur)) {
-            next();
+            Next();
             continue;
         }
 
-        if (try_tokenize_symbol(&tokens)) {
+        if (TryTokenizeSymbol(&tokens)) {
             continue;
         }
 
-        if (try_tokenize_word(&tokens)) {
+        if (TryTokenizeWord(&tokens)) {
             continue;
         }
 
-        if (try_tokenize_number(&tokens)) {
+        if (TryTokenizeNumber(&tokens)) {
             continue;
         }
 
-        if (try_tokenize_string(&tokens)) {
+        if (TryTokenizeString(&tokens)) {
             continue;
         }
 
-        diagnostic::report_error("Unexpected character '" +
-                                 std::string(1, next()) + "'");
+        diagnostic::ReportError("Unexpected character '" +
+                                 std::string(1, Next()) + "'");
     }
 
     tokens.push_back({"", TokenKind::EndOfFile});
     return tokens;
 }
 
-bool Lexer::try_tokenize_symbol(std::vector<Token> *tokens) {
+bool Lexer::TryTokenizeSymbol(std::vector<Token> *tokens) {
 
-    switch (peek()) {
+    switch (Peek()) {
         case '(':
             tokens->push_back({"(", TokenKind::LeftParen});
-            next();
+            Next();
             return true;
         case ')':
             tokens->push_back({")", TokenKind::RightParen});
-            next();
+            Next();
             return true;
         case ';':
             tokens->push_back({";", TokenKind::Semicolon});
-            next();
+            Next();
             return true;
         case ',':
             tokens->push_back({",", TokenKind::Comma});
-            next();
+            Next();
             return true;
         case '+':
             tokens->push_back({"+", TokenKind::Plus});
-            next();
+            Next();
             return true;
         case '-':
             tokens->push_back({"-", TokenKind::Minus});
-            next();
+            Next();
             return true;
         case '*':
             tokens->push_back({"*", TokenKind::Star});
-            next();
+            Next();
             return true;
         case '/':
             tokens->push_back({"/", TokenKind::Slash});
-            next();
+            Next();
             return true;
         case '&':
-            if (peek(1) == '&') {
+            if (Peek(1) == '&') {
                 tokens->push_back({"&&", TokenKind::AndAnd});
-                next(2);
+                Next(2);
                 return true;
             }
 
             return false;
         case '|':
-            if (peek(1) == '|') {
+            if (Peek(1) == '|') {
                 tokens->push_back({"||", TokenKind::OrOr});
-                next(2);
+                Next(2);
                 return true;
             }
 
             return false;
         case '<':
-            if (peek(1) == '=') {
+            if (Peek(1) == '=') {
                 tokens->push_back({"<=", TokenKind::LessEqualThan});
-                next(2);
+                Next(2);
                 return true;
             }
 
             tokens->push_back({"<", TokenKind::LessThan});
-            next();
+            Next();
             return true;
         case '>':
-            if (peek(1) == '=') {
+            if (Peek(1) == '=') {
                 tokens->push_back({">=", TokenKind::MoreEqualThan});
-                next(2);
+                Next(2);
                 return true;
             }
 
             tokens->push_back({">", TokenKind::MoreThan});
-            next();
+            Next();
             return true;
         case '=':
-            if (peek(1) == '=') {
+            if (Peek(1) == '=') {
                 tokens->push_back({"==", TokenKind::EqualEqual});
-                next(2);
+                Next(2);
                 return true;
             }
 
             tokens->push_back({"=", TokenKind::Equal});
-            next();
+            Next();
             return true;
         case '!':
-            if (peek(1) == '=') {
+            if (Peek(1) == '=') {
                 tokens->push_back({"!=", TokenKind::BangEqual});
-                next(2);
+                Next(2);
                 return true;
             }
 
             tokens->push_back({"!", TokenKind::Bang});
-            next();
+            Next();
             return true;
         default:
             return false;
     }
 }
 
-bool Lexer::try_tokenize_word(std::vector<Token> *tokens) {
-    if (!is_identifier_start(peek())) {
+bool Lexer::TryTokenizeWord(std::vector<Token> *tokens) {
+    if (!IsIdentifierStart(Peek())) {
         return false;
     }
 
     std::string str;
 
-    while (!end() && is_identifier_continue(peek())) {
-        str += next();
+    while (!End() && IsIdentifierContinue(Peek())) {
+        str += Next();
     }
 
     auto kind = TokenKind::Identifier;
@@ -164,67 +164,67 @@ bool Lexer::try_tokenize_word(std::vector<Token> *tokens) {
     return true;
 }
 
-bool Lexer::try_tokenize_number(std::vector<Token> *tokens) {
-    if (!is_number_start(peek())) {
+bool Lexer::TryTokenizeNumber(std::vector<Token> *tokens) {
+    if (!IsNumberStart(Peek())) {
         return false;
     }
 
     std::string str;
     int dots_encountered = 0;
 
-    while (!end() && is_number_continue(peek())) {
+    while (!End() && IsNumberContinue(Peek())) {
 
-        if (peek() == '.') {
+        if (Peek() == '.') {
             if (dots_encountered == 1) {
-                diagnostic::report_error("Too many dots in number literal");
+                diagnostic::ReportError("Too many dots in number literal");
             }
 
             dots_encountered++;
         }
 
-        str += next();
+        str += Next();
     }
 
     tokens->push_back({str, TokenKind::Number});
     return true;
 }
 
-bool Lexer::try_tokenize_string(std::vector<Token> *tokens) {
-    if (peek() != '"' && peek() != '\'') {
+bool Lexer::TryTokenizeString(std::vector<Token> *tokens) {
+    if (Peek() != '"' && Peek() != '\'') {
         return false;
     }
 
-    char quote = next();
+    char quote = Next();
     std::string str;
 
-    while (!end() && peek() != '\n' && peek() != quote) {
+    while (!End() && Peek() != '\n' && Peek() != quote) {
 
-        if (peek() == '\\') {
-            next(); // skip the backslash
+        if (Peek() == '\\') {
+            Next(); // skip the backslash
 
-            if (end() || peek() == '\n') {
-                diagnostic::report_error("Unterminated escape sequence");
+            if (End() || Peek() == '\n') {
+                diagnostic::ReportError("Unterminated escape sequence");
                 break;
             }
 
-            str += get_escape();
+            str += GetEscape();
             continue;
         }
 
-        str += next();
+        str += Next();
     }
 
-    if (peek() != quote) {
-        diagnostic::report_error("Unterminated string literal");
+    if (Peek() != quote) {
+        diagnostic::ReportError("Unterminated string literal");
     } else
-        next();
+        Next();
 
     tokens->push_back({str, TokenKind::String});
     return true;
 }
 
-char Lexer::get_escape() {
-    switch (next()) {
+char Lexer::GetEscape() {
+    switch (Next()) {
         case '\\':
             return '\\';
         case '\'':
@@ -242,13 +242,13 @@ char Lexer::get_escape() {
         case 'e':
             return '\e';
         default: {
-            diagnostic::report_error("Unknown escape sequence");
+            diagnostic::ReportError("Unknown escape sequence");
             return ' ';
         }
     }
 }
 
-char Lexer::peek() const {
+char Lexer::Peek() const {
     if (pos < source.size()) {
         return source[pos];
     }
@@ -256,7 +256,7 @@ char Lexer::peek() const {
     return '\0';
 }
 
-char Lexer::peek(ptrdiff_t offset) const {
+char Lexer::Peek(ptrdiff_t offset) const {
 
     auto lookup = static_cast<ptrdiff_t>(pos) + offset;
 
@@ -267,17 +267,17 @@ char Lexer::peek(ptrdiff_t offset) const {
     return source[lookup];
 }
 
-bool Lexer::end() const {
-    return peek() == '\0';
+bool Lexer::End() const {
+    return Peek() == '\0';
 }
 
-char Lexer::next() {
-    char c = peek();
+char Lexer::Next() {
+    char c = Peek();
     ++pos;
     return c;
 }
 
-void Lexer::next(size_t amount) {
+void Lexer::Next(size_t amount) {
     pos += amount;
 }
 

@@ -39,25 +39,25 @@ enum class TokenKind {
     EndOfFile,
 };
 
-std::string token_kind_to_string(TokenKind kind);
-bool is_logical_op(TokenKind op);
-bool is_comparison_op(TokenKind op);
+std::string TokenKindToString(TokenKind kind);
+bool IsLogicalOp(TokenKind op);
+bool IsComparisonOp(TokenKind op);
 
 struct Token {
     std::string str;
     TokenKind kind;
 
-    std::string repr() const {
+    std::string Repr() const {
         return kind == TokenKind::EndOfFile ? "<EOF>" : "'" + str + "'";
     }
 
-    std::string to_string() const {
-        return token_kind_to_string(kind) + "('" + str + "')";
+    std::string ToString() const {
+        return TokenKindToString(kind) + "('" + str + "')";
     }
 };
 
 inline std::ostream &operator<<(std::ostream &out, const Token &token) {
-    out << token.to_string();
+    out << token.ToString();
     return out;
 }
 

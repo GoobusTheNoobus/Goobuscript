@@ -11,7 +11,7 @@
 
 namespace driver {
 
-int repl() {
+int Repl() {
 
     std::cout << "Goobuscript interactive console\n";
     std::cout << "Type :quit to exit this shell.\n\n";
@@ -25,7 +25,7 @@ int repl() {
             return 1;
         }
 
-        string_strip(&input);
+        StringStrip(&input);
 
         if (input == ":quit") {
             break;
@@ -36,7 +36,7 @@ int repl() {
         }
 
         parse::Lexer lexer(input);
-        auto tokens = lexer.tokenize();
+        auto tokens = lexer.Tokenize();
 
         if (diagnostic::has_error) {
             continue;
@@ -50,7 +50,7 @@ int repl() {
         }
 
         Evaluator evaluator;
-        Value last_value = evaluator.run(tree);
+        Value last_value = evaluator.Run(tree);
 
         if (last_value && last_value.type != Type::Void) {
             std::cout << last_value.to_string() << std::endl;
