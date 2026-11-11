@@ -260,7 +260,7 @@ char Lexer::Peek(ptrdiff_t offset) const {
 
     auto lookup = static_cast<ptrdiff_t>(pos) + offset;
 
-    if (lookup < 0 || lookup >= source.size()) {
+    if (lookup < 0 || lookup >= static_cast<ptrdiff_t>(source.size())) {
         return '\0';
     }
 

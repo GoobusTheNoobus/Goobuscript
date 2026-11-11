@@ -53,17 +53,17 @@ Value Evaluator::EvaluateUnary(UnaryOperation &node) {
     Value value = Evaluate(node.operand);
 
     if (node.operator_ == parse::TokenKind::Bang) {
-        return !value.is_truthy();
+        return !value.IsTruthy();
     }
 
     switch (value.type) {
         case Type::Number: {
-            return node.operator_ == parse::TokenKind::Plus ? *value.get_num() : -(*value.get_num());
+            return node.operator_ == parse::TokenKind::Plus ? *value.GetNum() : -(*value.GetNum());
         }
 
         default: {
             diagnostic::ReportError("Unary " + parse::TokenKindToString(node.operator_) +
-                                     " is not supported for type '" + type_to_string(value.type) + "'");
+                                     " is not supported for type '" + TypeToString(value.type) + "'");
             return Error;
         }
     }
@@ -104,7 +104,7 @@ Value Evaluator::EvaluateLogical(BinaryOperation &node) {
         // && operator: returns the first untruthy value, or the last one
         // if both are truthy
         case parse::TokenKind::AndAnd: {
-            bool truthiness1 = value1.is_truthy();
+            bool truthiness1 = value1.IsTruthy();
 
             if (!truthiness1)
                 return value1;
@@ -119,7 +119,7 @@ Value Evaluator::EvaluateLogical(BinaryOperation &node) {
         // || operator: returns the first truthy operand, or the last one
         // if both is false
         case parse::TokenKind::OrOr: {
-            bool truthiness1 = value1.is_truthy();
+            bool truthiness1 = value1.IsTruthy();
 
             if (truthiness1)
                 return value1;
@@ -142,16 +142,16 @@ Value Evaluator::EvaluateArithmetic(parse::TokenKind &operator_, Value &lhs, Val
 
     if (is_both_str && operator_ == parse::TokenKind::Plus) {
 
-        std::string str1 = lhs.to_string();
-        std::string str2 = rhs.to_string();
+        std::string str1 = lhs.ToString();
+        std::string str2 = rhs.ToString();
 
         return str1 + str2;
     }
 
     if (is_both_num) {
 
-        double num1 = *lhs.get_num();
-        double num2 = *rhs.get_num();
+        double num1 = *lhs.GetNum();
+        double num2 = *rhs.GetNum();
 
         switch (operator_) {
             case parse::TokenKind::Plus:
@@ -168,7 +168,7 @@ Value Evaluator::EvaluateArithmetic(parse::TokenKind &operator_, Value &lhs, Val
     }
 
     diagnostic::ReportError("Binary " + parse::TokenKindToString(operator_) + " is not supported for types '" +
-                             type_to_string(lhs.type) + "' and '" + type_to_string(rhs.type) + "'");
+                             TypeToString(lhs.type) + "' and '" + TypeToString(rhs.type) + "'");
     return Error;
 }
 
@@ -181,21 +181,21 @@ Value Evaluator::EvaluateComparison(parse::TokenKind &operator_, Value &lhs, Val
             if (lhs.type == rhs.type) {
                 switch (lhs.type) {
                     case Type::Boolean:
-                        is_equal = *lhs.get_bool() == *rhs.get_bool();
+                        is_equal = *lhs.GetBool() == *rhs.GetBool();
                         break;
                     case Type::Number:
-                        is_equal = *lhs.get_num() == *rhs.get_num();
+                        is_equal = *lhs.GetNum() == *rhs.GetNum();
                         break;
                     case Type::String:
-                        is_equal = *lhs.get_str() == *rhs.get_str();
+                        is_equal = *lhs.GetStr() == *rhs.GetStr();
                         break;
                     case Type::Void:
                         is_equal = true; // nothing is always nothing :P
                         break;
                     default:
                         diagnostic::ReportError("Binary " + parse::TokenKindToString(operator_) +
-                                                 " is not supported for types '" + type_to_string(lhs.type) +
-                                                 "' and '" + type_to_string(rhs.type) + "'");
+                                                 " is not supported for types '" + TypeToString(lhs.type) +
+                                                 "' and '" + TypeToString(rhs.type) + "'");
                         return Error;
                 }
             }
@@ -210,13 +210,13 @@ Value Evaluator::EvaluateComparison(parse::TokenKind &operator_, Value &lhs, Val
 
             if (!(lhs.type == Type::Number && rhs.type == Type::Number)) {
                 diagnostic::ReportError("Binary " + parse::TokenKindToString(operator_) +
-                                         " is not supported for types '" + type_to_string(lhs.type) + "' and '" +
-                                         type_to_string(rhs.type) + "'");
+                                         " is not supported for types '" + TypeToString(lhs.type) + "' and '" +
+                                         TypeToString(rhs.type) + "'");
                 return Error;
             }
 
-            double lhs_num = *lhs.get_num();
-            double rhs_num = *rhs.get_num();
+            double lhs_num = *lhs.GetNum();
+            double rhs_num = *rhs.GetNum();
 
             switch (operator_) {
                 case parse::TokenKind::LessThan:

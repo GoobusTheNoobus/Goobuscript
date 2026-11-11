@@ -10,7 +10,7 @@ class Parser {
     public:
     Parser(std::vector<Token> tokens) : tokens(std::move(tokens)) {
     }
-    SyntaxTree parse();
+    SyntaxTree Parse();
 
     private:
     const std::vector<Token> tokens;

@@ -5,7 +5,7 @@
 #include <string>
 #include <variant>
 
-std::string type_to_string(Type type) {
+std::string TypeToString(Type type) {
     switch (type) {
         case Type::Number:
             return "number";
@@ -20,19 +20,19 @@ std::string type_to_string(Type type) {
     }
 }
 
-std::string Value::to_string() const {
+std::string Value::ToString() const {
     switch (type) {
         case Type::Number: {
-            double num = *get_num();
+            double num = *GetNum();
             return std::isnan(num) ? "NaN" : std::to_string(num);
         }
 
         case Type::String: {
-            return *get_str();
+            return *GetStr();
         }
 
         case Type::Boolean: {
-            return *get_bool() ? "true" : "false";
+            return *GetBool() ? "true" : "false";
         }
 
         default: {
@@ -41,20 +41,20 @@ std::string Value::to_string() const {
     }
 }
 
-bool Value::is_truthy() const {
+bool Value::IsTruthy() const {
     switch (type) {
         case Type::Number: {
-            double num = *get_num();
+            double num = *GetNum();
 
             return num != 0.0 && !std::isnan(num);
         }
 
         case Type::String: {
-            return !get_str()->empty();
+            return !GetStr()->empty();
         }
 
         case Type::Boolean: {
-            return *get_bool();
+            return *GetBool();
         }
 
         case Type::Void: {
@@ -67,7 +67,7 @@ bool Value::is_truthy() const {
     }
 }
 
-std::optional<double> Value::get_num() const {
+std::optional<double> Value::GetNum() const {
     if (type != Type::Number)
         return std::nullopt;
 
@@ -81,7 +81,7 @@ std::optional<double> Value::get_num() const {
     return *pnum;
 }
 
-std::optional<std::string> Value::get_str() const {
+std::optional<std::string> Value::GetStr() const {
     if (type != Type::String)
         return std::nullopt;
 
@@ -95,7 +95,7 @@ std::optional<std::string> Value::get_str() const {
     return *pstr;
 }
 
-std::optional<bool> Value::get_bool() const {
+std::optional<bool> Value::GetBool() const {
     if (type != Type::Boolean)
         return std::nullopt;
 

@@ -43,7 +43,7 @@ int Repl() {
         }
 
         parse::Parser parser(tokens);
-        SyntaxTree tree = parser.parse();
+        SyntaxTree tree = parser.Parse();
 
         if (diagnostic::has_error) {
             continue;
@@ -53,7 +53,7 @@ int Repl() {
         Value last_value = evaluator.Run(tree);
 
         if (last_value && last_value.type != Type::Void) {
-            std::cout << last_value.to_string() << std::endl;
+            std::cout << last_value.ToString() << std::endl;
         }
     }
 

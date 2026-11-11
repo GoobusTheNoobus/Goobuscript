@@ -9,7 +9,7 @@
 
 namespace parse {
 
-SyntaxTree Parser::parse() {
+SyntaxTree Parser::Parse() {
 
     SyntaxTree tree;
 

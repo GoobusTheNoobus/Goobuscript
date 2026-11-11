@@ -12,7 +12,7 @@ enum class Type {
     Error,
 };
 
-std::string type_to_string(Type type);
+std::string TypeToString(Type type);
 
 struct Value {
     std::variant<double, std::string, bool, std::monostate> data;
@@ -33,13 +33,13 @@ struct Value {
         return type != Type::Error;
     }
 
-    std::string to_string() const;
+    std::string ToString() const;
 
-    std::optional<double> get_num() const;
-    std::optional<std::string> get_str() const;
-    std::optional<bool> get_bool() const;
+    std::optional<double> GetNum() const;
+    std::optional<std::string> GetStr() const;
+    std::optional<bool> GetBool() const;
 
-    bool is_truthy() const;
+    bool IsTruthy() const;
 };
 
 inline const Value Error = std::monostate{};

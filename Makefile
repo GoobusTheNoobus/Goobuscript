@@ -2,7 +2,6 @@ CXX := g++
 CXXFLAGS := -std=c++20 -Wall -Wextra
 
 BUILD_DIR := build
-EXE_DIR := bin
 SOURCES := $(wildcard src/*.cpp) # All .cpp files in src/ folder
 
 TARGET := gs
@@ -23,9 +22,10 @@ else
 	$(error Unknown CONFIG '$(CONFIG)'. Used debug or release)
 endif
 
+OUT_DIR := $(BUILD_DIR)/$(CONFIG)
 
-OBJECTS := $(patsubst src/%.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
-EXE := $(EXE_DIR)/$(TARGET)
+OBJECTS := $(patsubst src/%.cpp,$(OUT_DIR)/%.o,$(SOURCES))
+EXE := $(OUT_DIR)/$(TARGET)
 
 .PHONY: all debug release clean
 
@@ -38,20 +38,22 @@ release:
 	$(MAKE) CONFIG=release
 
 # Compilation
-$(BUILD_DIR):
+$(OUT_DIR):
 	mkdir -p $@
 
-$(BUILD_DIR)/%.o: src/%.cpp | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $(BUILD_FLAGS) -c $< -o $@
+$(OUT_DIR)/%.o: src/%.cpp | $(OUT_DIR)
+	$(CXX) $(CXXFLAGS) $(BUILD_FLAGS) -MMD -MP -c $< -o $@
 
 # Linking
 
-$(EXE): $(OBJECTS) | $(EXE_DIR)
+$(EXE): $(OBJECTS) | $(OUT_DIR)
 	$(CXX) $(OBJECTS) -o $@
-
-$(EXE_DIR):
-	mkdir -p $@
 
 # Cleanup
 clean:
 	rm -rf $(BUILD_DIR)
+
+# Dependencies
+DEPS := $(OBJECTS:.o=.d)
+
+-include $(DEPS)
