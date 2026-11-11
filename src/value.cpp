@@ -24,7 +24,16 @@ std::string Value::ToString() const {
     switch (type) {
         case Type::Number: {
             double num = *GetNum();
-            return std::isnan(num) ? "NaN" : std::to_string(num);
+            if (std::isnan(num)) 
+                return "NaN";
+
+            if (std::isinf(num))
+                return num > 0 ? "Inf" : "-Inf";
+
+            if (std::trunc(num) == num)
+                return std::to_string(static_cast<int>(num));
+
+            return std::to_string(num);
         }
 
         case Type::String: {
