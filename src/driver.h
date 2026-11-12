@@ -2,6 +2,6 @@
 
 namespace driver {
 
-int Repl();
+int ParseAndRun(int argc, char* argv[]);
 
 }
